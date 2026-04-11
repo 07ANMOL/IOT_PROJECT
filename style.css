@@ -1,20 +1,29 @@
 /* ================================
-   🎨 LIGHT GRADIENT THEME
+   🎨 THEME VARIABLES
 ================================ */
 :root {
-    --bg: #f5f6fb;
+    --bg: linear-gradient(135deg, #f8fafc, #eef2ff);
+    --container-bg: #ffffff;
 
-    --gradient-main: linear-gradient(135deg, #6a5af9, #ff6b8a);
+    --text-main: #1e293b;
+    --text-secondary: #475569;
+    --text-light: #64748b;
 
-    --voltage: linear-gradient(135deg, #6a5af9, #8b7bff);
-    --current: linear-gradient(135deg, #22c55e, #4ade80);
-    --power: linear-gradient(135deg, #f59e0b, #fbbf24);
-    --units: linear-gradient(135deg, #a855f7, #d946ef);
+    --border: #e2e8f0;
 
-    --text-dark: #2d2d2d;
-    --text-light: #ffffff;
+    --radius: 20px;
+}
 
-    --radius: 30px;
+/* 🌙 DARK MODE */
+body.dark {
+    --bg: linear-gradient(135deg, #0f172a, #1e293b);
+    --container-bg: #1e293b;
+
+    --text-main: #f1f5f9;
+    --text-secondary: #cbd5f5;
+    --text-light: #94a3b8;
+
+    --border: #334155;
 }
 
 /* ================================
@@ -22,9 +31,10 @@
 ================================ */
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(rgba(245,246,251,0.1), rgba(245,246,251,0.1)),
-    background-size: cover;
-    background-position: center;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text-main);
+    transition: 0.3s;
 }
 
 /* ================================
@@ -34,6 +44,11 @@ body {
     max-width: 1100px;
     margin: auto;
     padding: 30px 20px;
+
+    background: var(--container-bg);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    transition: 0.3s;
 }
 
 /* ================================
@@ -41,39 +56,33 @@ body {
 ================================ */
 .header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
 .header h1 {
     font-size: 2.3rem;
     font-weight: 700;
-    background: var(--gradient-main);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #4f46e5;
 }
 
 .header p {
-    color: #020202;
-    font-weight: bolder;
+    color: var(--text-secondary);
+}
+
+#last-updated {
+    color: var(--text-light);
+    font-size: 0.9rem;
 }
 
 /* ================================
-   🔘 BUTTON
+   🌙 DARK MODE BUTTON
 ================================ */
-.refresh-btn {
-    margin-top: 15px;
-    padding: 12px 25px;
-    border-radius: 999px;
-    border: none;
-    background: var(--gradient-main);
-    color: white;
-    font-weight: 500;
+.theme-toggle {
+    position: absolute;
+    right: 20px;
+    top: 20px;
     cursor: pointer;
-    transition: 0.3s;
-}
-
-.refresh-btn:hover {
-    transform: scale(1.05);
+    font-size: 1.2rem;
 }
 
 /* ================================
@@ -86,242 +95,109 @@ body {
 }
 
 /* ================================
-   💊 CARD (PILL STYLE)
+   💊 CARDS (UNCHANGED COLORS)
 ================================ */
 .live-card {
-    border-radius: var(--radius);
-    padding: 20px 25px;
+    border-radius: 25px;
+    padding: 20px;
     color: white;
-    transition: 0.3s ease;
-    position: relative;
-    overflow: hidden;
+    transition: 0.3s;
 }
 
-/* Gradient backgrounds */
-.live-card:nth-child(1) { background: var(--voltage); }
-.live-card:nth-child(2) { background: var(--current); }
-.live-card:nth-child(3) { background: var(--power); }
-.live-card:nth-child(4) { background: var(--units); }
+.live-card:nth-child(1){background: linear-gradient(135deg,#6366f1,#8b5cf6);}
+.live-card:nth-child(2){background: linear-gradient(135deg,#22c55e,#4ade80);}
+.live-card:nth-child(3){background: linear-gradient(135deg,#f59e0b,#fbbf24);}
+.live-card:nth-child(4){background: linear-gradient(135deg,#ec4899,#d946ef);}
 
-/* Hover animation */
 .live-card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
-/* Shine effect */
-.live-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
-    transition: 0.6s;
-}
-
-.live-card:hover::before {
-    left: 100%;
-}
-
-/* ================================
-   📝 TEXT
-================================ */
 .live-card h3 {
     font-size: 0.9rem;
-    opacity: 0.9;
 }
 
 .live-card p {
     font-size: 1.8rem;
-    font-weight: 700;
-    margin-top: 5px;
+    font-weight: bold;
 }
 
 /* ================================
-   💫 UPDATE ANIMATION
+   📝 SECTION TITLES
 ================================ */
-.live-card.updated p {
-    animation: bounce 0.4s ease;
-}
-
-@keyframes bounce {
-    50% { transform: scale(1.15); }
+h2 {
+    color: var(--text-main);
+    margin-bottom: 15px;
 }
 
 /* ================================
-   � BILL CALCULATOR
+   💰 BILL SECTION
 ================================ */
 .bill-calculator {
     margin-top: 40px;
-    background: rgb(243, 240, 242);
-    border-radius: 20px;
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
     padding: 25px;
-    box-shadow: 0 5px 20px rgba(83, 196, 159, 0.05);
-    border: #a855f7 10px solid;
-}
-
-#bill-title {
-    color: #000000;
-    margin-bottom: 20px;
-    font-weight: 1000;
     text-align: center;
 }
 
-.bill-inputs {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
-}
-
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.input-group label {
-    font-weight: 600;
-    color: #2d2d2d;
-    font-size: 0.9rem;
-}
-
-.input-group input {
-    padding: 10px 15px;
-    border: 2px solid #e2e8f0;
+.bill-inputs input {
+    padding: 10px;
     border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 500;
-    text-align: center;
-    width: 120px;
-    transition: 0.3s;
-}
-
-.input-group input:focus {
-    outline: none;
-    border-color: #6a5af9;
-    box-shadow: 0 0 0 3px rgba(106, 90, 249, 0.1);
-}
-
-.calculate-btn {
-    padding: 12px 25px;
-    border-radius: 999px;
-    border: none;
-    background: var(--gradient-main);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-    font-size: 1rem;
-}
-
-.calculate-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(106, 90, 249, 0.3);
-}
-
-.calculate-btn:active {
-    transform: scale(0.95);
-}
-
-.bill-result {
-    display: flex;
-    justify-content: center;
+    border: 2px solid var(--border);
+    background: #f1f5f9;
+    color: var(--text-main);
 }
 
 .bill-card {
-    background: linear-gradient(135deg, #ff6b8a, #f59e0b);
+    margin-top: 20px;
+    padding: 20px;
     border-radius: var(--radius);
-    padding: 25px 30px;
+    background: linear-gradient(135deg, #ff6b8a, #f59e0b);
     color: white;
-    text-align: center;
-    min-width: 250px;
-    transition: 0.3s ease;
-    position: relative;
-    overflow: hidden;
 }
-
-.bill-card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+.bill-calculator h2
+{
+    color: #4f46e5;
 }
-
-.bill-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
-    transition: 0.6s;
-}
-
-.bill-card:hover::before {
-    left: 100%;
-}
-
-.bill-card h3 {
-    font-size: 1rem;
-    opacity: 0.9;
-    margin-bottom: 10px;
-}
-
-.bill-amount {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+.graph-section,
+.bill-calculator {
+    box-shadow: 0 10px 30px rgba(30, 64, 175, 0.3);
 }
 
 /* ================================
-   �📊 GRAPH SECTION
+   📊 GRAPH
 ================================ */
 .graph-section {
     margin-top: 40px;
-    background: rgb(243, 240, 242);
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 5px 20px rgba(83, 196, 159, 0.05);
-    border: #a855f7 10px solid;
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+}
+.graph-section h2
+{
+    color: #4f46e5;
+}
+/* ================================
+   ✨ ANIMATIONS
+================================ */
+@keyframes fadeUp {
+    from {opacity:0; transform:translateY(20px);}
+    to {opacity:1; transform:translateY(0);}
+}
+
+.container > * {
+    animation: fadeUp 0.6s ease;
 }
 
 /* ================================
    📱 MOBILE
 ================================ */
 @media (max-width: 768px) {
-
     .live-grid {
-        display: flex;
-        overflow-x: auto;
-        gap: 12px;
-        padding-bottom: 10px;
+        grid-template-columns: 1fr;
     }
-
-    .live-card {
-        min-width: 180px;
-        flex: 0 0 auto;
-    }
-
-    .live-grid::-webkit-scrollbar {
-        display: none;
-    }
-
-    canvas {
-        height: 220px !important;
-    }
-}
-#live-monitor-title {
-    color: #000000;
-    margin-bottom: 20px;
-    font-weight: 1000;
-}
-#graph-title {
-    color: #000000;
-    margin-bottom: 20px;
-    font-weight: 1000;
 }
