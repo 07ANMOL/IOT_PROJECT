@@ -4,200 +4,73 @@ const readAPIKey = "EKRPTGZ211Q08MWQ";
 
 const url = `https://api.thingspeak.com/channels/${channelID}/feeds.json?api_key=${readAPIKey}&results=10`;
 
-let powerChart;
+let chart;
 
-/* 📡 FETCH DATA */
+/* FETCH DATA */
 async function fetchData() {
-  try {
     const res = await fetch(url);
     const data = await res.json();
 
     const feeds = data.feeds;
     const latest = feeds[feeds.length - 1];
 
-    // ⏱️ Last updated
-    document.getElementById("last-updated").textContent =
-      "Last updated: " + new Date().toLocaleTimeString();
+    update("live-voltage", latest.field1);
+    update("live-current", latest.field2);
+    update("live-power", latest.field3);
+    update("live-units", latest.field4);
 
-    // 🎯 Update values
-    updateValue("live-voltage", latest.field1 + " V");
-    updateValue("live-current", latest.field2 + " A");
-    updateValue("live-power", latest.field3 + " W");
-    updateValue("live-units", latest.field4 + " kWh");
+    document.getElementById("last-updated").innerText =
+        "Last updated: " + new Date().toLocaleTimeString();
 
-    // 📊 Chart data
-    const labels = feeds.map(f =>
-      new Date(f.created_at).toLocaleTimeString()
-    );
-
-    const powerData = feeds.map(f =>
-      parseFloat(f.field3 || 0)
-    );
-
-    updateChart(labels, powerData);
-
-  } catch (err) {
-    console.error("Error:", err);
-  }
+    updateChart(feeds);
 }
 
-/* 🔄 UPDATE VALUE */
-function animateValue(el, start, end, duration = 400) {
-  let startTime = null;
+/* UPDATE VALUES */
+function update(id, value) {
+    document.getElementById(id).innerText = parseFloat(value || 0).toFixed(2);
+}
 
-  function animation(currentTime) {
-    if (!startTime) startTime = currentTime;
-    let progress = Math.min((currentTime - startTime) / duration, 1);
+/* CHART */
+function updateChart(feeds) {
+    const labels = feeds.map(f => new Date(f.created_at).toLocaleTimeString());
+    const data = feeds.map(f => f.field3);
 
-    let value = start + (end - start) * progress;
-    el.textContent = value.toFixed(2);
-
-    if (progress < 1) {
-      requestAnimationFrame(animation);
+    if (chart) {
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = data;
+        chart.update();
+        return;
     }
-  }
 
-  requestAnimationFrame(animation);
-}
-
-function updateValue(id, newValue) {
-  const el = document.getElementById(id);
-
-  const current = parseFloat(el.textContent) || 0;
-  const numeric = parseFloat(newValue);
-
-  animateValue(el, current, numeric);
-
-  const card = el.closest(".live-card");
-  card.classList.add("updated");
-
-  setTimeout(() => card.classList.remove("updated"), 400);
-}
-
-/* 📊 CHART */
-function updateChart(labels, data) {
-  if (powerChart) {
-    powerChart.data.labels = labels;
-    powerChart.data.datasets[0].data = data;
-    powerChart.update();
-    return;
-  }
-
-  const ctx = document.getElementById("powerChart");
-
-  powerChart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: labels,
-      datasets: [{
-        label: "Power (W)",
-        data: data,
-        borderColor: "#6a5af9",
-        backgroundColor: "rgba(106,90,249,0.15)",
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: "#6a5af9",
-        pointBorderColor: "#fff",
-        pointRadius: 5
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          labels: { color: "#e2e8f0" }
+    chart = new Chart(document.getElementById("powerChart"), {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Power (W)",
+                data: data,
+                borderColor: "#fff",
+                backgroundColor: "rgba(255,255,255,0.2)",
+                fill: true
+            }]
         }
-      },
-      scales: {
-        x: {
-          ticks: { color: "#94a3b8" },
-          grid: { color: "rgba(255,255,255,0.05)" }
-        },
-        y: {
-          ticks: { color: "#94a3b8" },
-          grid: { color: "rgba(255,255,255,0.05)" }
-        }
-      }
-    }
-  });
+    });
 }
 
-/* 🔁 AUTO REFRESH */
+/* BILL */
+document.getElementById("calculate-bill-btn").onclick = () => {
+    let units = parseFloat(document.getElementById("live-units").innerText);
+    let rate = parseFloat(document.getElementById("rate-input").value);
+
+    let bill = units * rate;
+    document.getElementById("bill-amount").innerText = "₹" + bill.toFixed(2);
+};
+
+/* REFRESH */
+document.getElementById("refresh-btn").onclick = fetchData;
+
 setInterval(fetchData, 15000);
 fetchData();
-
-/* 🔘 BUTTON */
-document.getElementById("refresh-btn").addEventListener("click", () => {
-  fetchData();
-
-  const btn = document.getElementById("refresh-btn");
-  btn.textContent = "⏳ Refreshing...";
-  btn.disabled = true;
-
-  setTimeout(() => {
-    btn.textContent = "🔄 Refresh Data";
-    btn.disabled = false;
-  }, 1500);
-});
-
-/* 💰 BILL CALCULATION */
-function calculateBill() {
-  const unitsElement = document.getElementById("live-units");
-  const rateInput = document.getElementById("rate-input");
-  const billAmountElement = document.getElementById("bill-amount");
-
-  const unitsText = unitsElement.textContent;
-  const units = parseFloat(unitsText.replace(" kWh", "")) || 0;
-  const rate = parseFloat(rateInput.value) || 0;
-
-  const billAmount = units * rate;
-
-  // Animate the bill amount
-  const currentBill = parseFloat(billAmountElement.textContent.replace("₹", "")) || 0;
-  animateValue(billAmountElement, currentBill, billAmount);
-
-  // Update display with currency symbol
-  setTimeout(() => {
-    billAmountElement.textContent = "₹" + billAmount.toFixed(2);
-  }, 400);
-
-  // Add visual feedback
-  const billCard = billAmountElement.closest(".bill-card");
-  billCard.classList.add("updated");
-
-  setTimeout(() => billCard.classList.remove("updated"), 400);
-}
-
-// Calculate bill button event listener
-document.getElementById("calculate-bill-btn").addEventListener("click", () => {
-  calculateBill();
-
-  const btn = document.getElementById("calculate-bill-btn");
-  btn.textContent = "✅ Calculated!";
-  btn.disabled = true;
-
-  setTimeout(() => {
-    btn.textContent = "🧮 Calculate Bill";
-    btn.disabled = false;
-  }, 1000);
-});
-
-// Auto-calculate bill when data updates
-function updateValue(id, newValue) {
-  const el = document.getElementById(id);
-
-  const current = parseFloat(el.textContent) || 0;
-  const numeric = parseFloat(newValue);
-
-  animateValue(el, current, numeric);
-
-  const card = el.closest(".live-card");
-  card.classList.add("updated");
-
-  setTimeout(() => card.classList.remove("updated"), 400);
-
-  // Auto-calculate bill when units are updated
-  if (id === "live-units") {
-    setTimeout(calculateBill, 400); // Wait for animation to complete
-  }
+function toggleTheme() {
+    document.body.classList.toggle("dark");
 }
