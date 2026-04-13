@@ -46,7 +46,12 @@
         <h2>💰 Electricity Bill Calculator</h2>
 
         <div class="bill-inputs">
-            <input type="number" id="rate-input" value="8.5">
+            <div class="charge-input-group">
+                <label>Enter per unit charge:</label>
+                <button id="decrease-charge-btn" class="charge-btn">−</button>
+                <input type="number" id="per-unit-charge" value="0" readonly>
+                <button id="increase-charge-btn" class="charge-btn">+</button>
+            </div>
             <button id="calculate-bill-btn">🧮 Calculate</button>
         </div>
 
