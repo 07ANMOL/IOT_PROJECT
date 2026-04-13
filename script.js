@@ -49,18 +49,31 @@ function updateChart(feeds) {
             datasets: [{
                 label: "Power (W)",
                 data: data,
-                borderColor: "#fff",
-                backgroundColor: "rgba(255,255,255,0.2)",
-                fill: true
+                borderColor: "#4f46e5",
+                backgroundColor: "rgba(79, 70, 229, 0.1)",
+                fill: true,
+                borderWidth: 3,
+                tension: 0.4
             }]
         }
     });
 }
 
+/* PER UNIT CHARGE HANDLERS */
+document.getElementById("increase-charge-btn").onclick = () => {
+    let current = parseFloat(document.getElementById("per-unit-charge").value);
+    document.getElementById("per-unit-charge").value = (current + 0.5).toFixed(1);
+};
+
+document.getElementById("decrease-charge-btn").onclick = () => {
+    let current = parseFloat(document.getElementById("per-unit-charge").value);
+    document.getElementById("per-unit-charge").value = Math.max(0, current - 0.5).toFixed(1);
+};
+
 /* BILL */
 document.getElementById("calculate-bill-btn").onclick = () => {
     let units = parseFloat(document.getElementById("live-units").innerText);
-    let rate = parseFloat(document.getElementById("rate-input").value);
+    let rate = parseFloat(document.getElementById("per-unit-charge").value);
 
     let bill = units * rate;
     document.getElementById("bill-amount").innerText = "₹" + bill.toFixed(2);
